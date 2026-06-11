@@ -10,16 +10,54 @@ import { dirname, join } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT = join(__dirname, "..", "news.json");
 
-// Consultas usadas na busca. Edite à vontade.
+// Consultas usadas na busca — foco na Zona Leste e alto padrão. Edite à vontade.
 const QUERIES = [
-  "mercado imobiliário São Paulo",
-  "imóveis São Paulo preço",
-  "lançamentos imobiliários São Paulo",
-  "Secovi-SP",
-  "aluguel São Paulo mercado",
+  "Tatuapé imóveis valorização",
+  "Mooca imóveis alto padrão",
+  "Anália Franco imóveis lançamento",
+  "Zona Leste São Paulo mercado imobiliário valorização",
+  "alto padrão São Paulo imóveis luxo",
+  "Eixo Platina Tatuapé empreendimento",
 ];
 
 const MAX_ITEMS = 24; // quantas notícias manter no total
+
+// === Filtro de notícias POSITIVAS ===
+// Notícias que contiverem qualquer palavra abaixo são descartadas.
+const NEGATIVE_WORDS = [
+  "queda", "cai", "caem", "caiu", "recuo", "recua", "despenca", "desaba",
+  "crise", "desaceleracao", "desacelera", "retracao", "piora", "tombo",
+  "bolha", "estouro", "prejuizo", "falencia", "divida", "endividamento",
+  "inadimplencia", "calote", "golpe", "fraude", "despejo", "leilao",
+  "processo", "acao judicial", "alerta", "risco", "problema", "denuncia",
+  "violencia", "assalto", "roubo", "crime", "morte", "morto", "incendio",
+  "enchente", "alagamento", "interdicao", "desabamento", "tragedia",
+];
+
+// (Opcional) palavras que dão prioridade — notícias com estas sobem na lista.
+const POSITIVE_WORDS = [
+  "valorizacao", "valoriza", "alta", "cresce", "crescimento", "recorde",
+  "oportunidade", "lancamento", "investimento", "aquecido", "demanda",
+  "expansao", "premium", "luxo", "sofisticado", "destaque", "polo",
+];
+
+const ACCENTS = new RegExp("[\\u0300-\\u036f]", "g");
+function normalize(s) {
+  return (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(ACCENTS, ""); // remove acentos
+}
+
+function isPositive(title) {
+  const t = normalize(title);
+  return !NEGATIVE_WORDS.some((w) => t.includes(w));
+}
+
+function positiveScore(title) {
+  const t = normalize(title);
+  return POSITIVE_WORDS.reduce((acc, w) => acc + (t.includes(w) ? 1 : 0), 0);
+}
 
 function googleNewsUrl(query) {
   const q = encodeURIComponent(query);
@@ -113,10 +151,18 @@ async function main() {
     deduped.push(item);
   }
 
-  // Ordena do mais recente para o mais antigo
-  deduped.sort((a, b) => b.ts - a.ts);
+  // Mantém somente notícias positivas (remove as que têm palavras negativas)
+  const positives = deduped.filter((item) => isPositive(item.title));
 
-  const news = deduped.slice(0, MAX_ITEMS).map((n) => ({
+  // Ordena: primeiro as com mais "palavras positivas", depois mais recentes
+  positives.sort((a, b) => {
+    const ds = positiveScore(b.title) - positiveScore(a.title);
+    if (ds !== 0) return ds;
+    return b.ts - a.ts;
+  });
+  const finalList = positives;
+
+  const news = finalList.slice(0, MAX_ITEMS).map((n) => ({
     title: n.title,
     link: n.link,
     source: n.source,

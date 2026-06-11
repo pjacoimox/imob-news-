@@ -1,8 +1,17 @@
-# Notícias do Mercado Imobiliário + Gerador de Posts
+# Viggio · Notícias do Mercado + Gerador de Posts
 
-Site estático que **busca automaticamente** notícias do mercado imobiliário de São Paulo
-e permite **gerar um post 1080×1080 para o Instagram** com um clique. Roda 100% no GitHub
-(GitHub Pages + GitHub Actions), sem servidor e sem custo.
+Site estático que **busca automaticamente** notícias **positivas** do mercado imobiliário de
+alto padrão da Zona Leste (Tatuapé, Anália Franco, Mooca) e permite **gerar um post 1080×1350
+para o Instagram** — com **imagem de fundo e o título por cima**. Roda 100% no GitHub
+(GitHub Pages + GitHub Actions), sem servidor e sem custo. Marca Viggio, fonte **Outfit**.
+
+## Destaques
+
+- **Só notícias positivas**: o script descarta manchetes com palavras negativas
+  (queda, crise, despejo, etc.). Edite as listas em `scripts/fetch-news.mjs`.
+- **Foco na região/alto padrão**: buscas por Tatuapé, Mooca, Anália Franco, Eixo Platina e luxo.
+- **Post com foto de fundo**: no gerador, suba uma foto do imóvel/bairro; o título entra por
+  cima com um leve escurecimento para leitura, e o logo "viggio" no rodapé.
 
 ## Como funciona
 
@@ -45,22 +54,39 @@ e permite **gerar um post 1080×1080 para o Instagram** com um clique. Roda 100%
 4. **Rode a busca pela primeira vez**: aba **Actions** → *Atualizar notícias* →
    **Run workflow**. Depois disso ela roda sozinha no horário agendado.
 
-## Personalizar a marca da imobiliária
+## Logo oficial (opcional)
 
-Abra o `index.html` e edite o bloco **CONFIG** (perto do fim do arquivo):
+O post já desenha o wordmark "viggio" em vetor. Se quiser usar o **PNG oficial** (branco,
+fundo transparente, fica melhor sobre a foto):
+
+1. Suba o arquivo no repositório como `logo.png`.
+2. No `index.html`, no bloco **CONFIG**, troque `logoUrl: ""` por `logoUrl: "logo.png"`.
+
+## Buscar fotos grátis no gerador (Pexels)
+
+No gerador de post você pode **buscar fotos gratuitas** (uso comercial liberado) ou **subir a sua
+própria foto**. Para ativar a busca, gere uma chave gratuita do Pexels:
+
+1. Acesse https://www.pexels.com/api/ e clique em "Get Started" (crie conta grátis).
+2. Copie sua **API Key**.
+3. No `index.html`, bloco **CONFIG**, cole em `pexelsApiKey: "SUA_CHAVE_AQUI"`.
+
+Pronto: digite um termo (ex.: "apartamento luxo", "sala moderna", "São Paulo"), clique numa foto
+e ela vira o fundo do post. O upload de foto própria funciona mesmo sem a chave.
+
+## Personalizar a marca
+
+No `index.html`, bloco **CONFIG** (perto do fim do arquivo):
 
 ```js
 const CONFIG = {
-  agencyName: "Sua Imobiliária",
-  handle: "@suaimobiliaria",
-  brand: "#0f3d2e",     // cor principal
-  accent: "#c8a24a",    // cor de destaque
-  logoUrl: "logo.png",  // opcional: suba um logo.png no repositório
+  agencyName: "viggio",
+  handle: "@viggioimoveis",
+  brand: "#0a0a0a",   // cor de fundo padrão (quando não há foto)
+  font: "Outfit",
+  logoUrl: "",        // "logo.png" para usar o PNG oficial
 };
 ```
-
-Para que as cores do topo da página também mudem, ajuste `--brand` e `--accent`
-no bloco `:root` do CSS (no topo do mesmo arquivo).
 
 ## Ajustar a frequência ou as fontes da busca
 
