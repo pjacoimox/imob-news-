@@ -44,7 +44,7 @@
   .preview-col { flex: 1; min-width: 280px; }
   canvas { width: 100%; max-width: 360px; height: auto; border-radius: 12px; border: 1px solid #eee; display: block; background: #0a0a0a; }
   label { font-size: 13px; font-weight: 600; display: block; margin: 14px 0 5px; }
-  textarea, input[type=text] { width: 100%; font-size: 14px; padding: 9px 11px; border: 1px solid #ccc; border-radius: 9px; font-family: inherit; }
+  textarea, input[type=text], select { width: 100%; font-size: 14px; padding: 9px 11px; border: 1px solid #ccc; border-radius: 9px; font-family: inherit; background: #fff; }
   textarea { resize: vertical; min-height: 70px; }
   .file-row { margin-top: 6px; }
   .sliders { margin-top: 12px; display: grid; gap: 10px; }
@@ -143,6 +143,16 @@
           <input type="range" id="fontSize" min="36" max="130" step="1" value="86" oninput="onFontSize()" />
         </div>
         <div class="hint" style="margin:4px 0 0;"><label style="display:inline; margin:0; font-weight:500;"><input type="checkbox" id="autoFit" checked onchange="render()" style="width:auto; vertical-align:-1px;" /> ajustar tamanho automaticamente</label></div>
+
+        <label>Peso da fonte do título</label>
+        <select id="fontWeight" onchange="onFontWeight()">
+          <option value="300">Light (300)</option>
+          <option value="400">Regular (400)</option>
+          <option value="500">Medium (500)</option>
+          <option value="600">Semibold (600)</option>
+          <option value="700">Bold (700)</option>
+          <option value="800" selected>Extrabold (800)</option>
+        </select>
 
         <label>Selo / categoria</label>
         <input type="text" id="kickerInput" value="MERCADO IMOBILIÁRIO" oninput="render()" />
@@ -307,6 +317,16 @@ function onFontSize() {
   render();
 }
 
+// garante que o peso escolhido esteja carregado antes de desenhar
+function onFontWeight() {
+  const w = document.getElementById("fontWeight").value;
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load(`${w} 90px ${CONFIG.font}`).then(render).catch(render);
+  } else {
+    render();
+  }
+}
+
 function val(id) { return parseFloat(document.getElementById(id).value); }
 
 function roundRect(x, y, w, h, r) {
@@ -435,13 +455,14 @@ function render() {
   }
 
   // Manchete — automático (caber) OU tamanho escolhido no slider
+  const tw = document.getElementById("fontWeight").value;
   const maxW = W - pad * 2;
   let fontSize;
   let lines;
   if (document.getElementById("autoFit").checked) {
     fontSize = 120;
     do {
-      ctx.font = `800 ${fontSize}px ${F}`;
+      ctx.font = `${tw} ${fontSize}px ${F}`;
       lines = wrapText(ctx, headline, maxW);
       if (lines.length * fontSize * 1.16 <= 840) break;
       fontSize -= 4;
@@ -449,13 +470,13 @@ function render() {
     document.getElementById("fontSize").value = fontSize;
   } else {
     fontSize = val("fontSize");
-    ctx.font = `800 ${fontSize}px ${F}`;
+    ctx.font = `${tw} ${fontSize}px ${F}`;
     lines = wrapText(ctx, headline, maxW);
   }
   document.getElementById("fsVal").textContent = Math.round(fontSize) + "px";
 
   ctx.fillStyle = "#fff";
-  ctx.font = `800 ${fontSize}px ${F}`;
+  ctx.font = `${tw} ${fontSize}px ${F}`;
   const lineH = fontSize * 1.16;
   let y = H - 200 - (lines.length - 1) * lineH;
   for (const ln of lines) { ctx.fillText(ln, pad, y); y += lineH; }
