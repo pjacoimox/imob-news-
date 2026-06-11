@@ -1,0 +1,42 @@
+{
+  "updatedAt": "2026-06-11T00:00:00.000Z",
+  "count": 6,
+  "news": [
+    {
+      "title": "Mercado imobiliário de São Paulo deve desacelerar e manter estabilidade em 2026",
+      "link": "https://www.brasil247.com/negocios/mercado-imobiliario-de-sao-paulo-deve-desacelerar-e-manter-estabilidade-em-2026-a16ul5jt",
+      "source": "Brasil 247",
+      "pubDate": "Tue, 10 Jun 2026 12:00:00 GMT"
+    },
+    {
+      "title": "Secovi-SP divulga dados de março do mercado imobiliário",
+      "link": "https://secovi.com.br/secovi-sp-divulga-dados-de-marco-do-mercado-imobiliario/",
+      "source": "Secovi-SP",
+      "pubDate": "Wed, 30 Apr 2026 10:00:00 GMT"
+    },
+    {
+      "title": "Preço de imóveis desacelera, aluguel reage e Minha Casa avança: os sinais do mercado imobiliário no 1º tri",
+      "link": "https://portas.com.br/dados-inteligencia/mercado-imobiliario-2026-precos-aluguel-mcmv/",
+      "source": "Portas",
+      "pubDate": "Mon, 05 May 2026 09:00:00 GMT"
+    },
+    {
+      "title": "Vendas caem e lançamentos recuam 60% em SP no 1º bimestre",
+      "link": "https://portas.com.br/dados-inteligencia/projecoes-cenarios/vendas-caem-e-lancamentos-recuam-60-em-sp-no-1o-bimestre/",
+      "source": "Portas",
+      "pubDate": "Thu, 20 Mar 2026 09:00:00 GMT"
+    },
+    {
+      "title": "Preços de imóveis devem continuar subindo em 2026, apontam especialistas",
+      "link": "https://portas.com.br/noticias/precos-de-imoveis-devem-continuar-subindo-em-2026-apontam-especialistas/",
+      "source": "Portas",
+      "pubDate": "Fri, 13 Feb 2026 09:00:00 GMT"
+    },
+    {
+      "title": "Lançamentos de imóveis saltaram 34% em São Paulo, com MCMV",
+      "link": "https://portas.com.br/noticias/lancamentos-de-imoveis-saltaram-34-em-sao-paulo-com-mcmv/",
+      "source": "Portas",
+      "pubDate": "Wed, 28 Jan 2026 09:00:00 GMT"
+    }
+  ]
+}
