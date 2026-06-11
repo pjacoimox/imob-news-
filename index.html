@@ -58,6 +58,11 @@
   .photo-grid img { width: 100%; height: 78px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
   .photo-grid img:hover { border-color: #111; }
   .search-status { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .colors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .color-item { display: flex; flex-direction: column; gap: 4px; }
+  .color-item > span { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .color-item input[type=color] { width: 100%; height: 34px; padding: 2px; border: 1px solid #ccc; border-radius: 8px; background: #fff; cursor: pointer; }
+  .color-item input[type=text] { width: 100%; font-size: 12px; padding: 5px 7px; border: 1px solid #ccc; border-radius: 7px; font-family: inherit; text-transform: lowercase; }
   .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
   .hint { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
   .empty { text-align: center; color: var(--muted); padding: 40px 0; }
@@ -130,8 +135,26 @@
             <input type="range" id="contrast" min="40" max="180" step="1" value="100" oninput="render()" />
           </div>
           <div class="slider">
-            <span>Escurecer fundo <b id="darkVal">50%</b></span>
+            <span>Intensidade do fade <b id="darkVal">50%</b></span>
             <input type="range" id="dark" min="0" max="90" step="1" value="50" oninput="render()" />
+          </div>
+        </div>
+
+        <div class="colors">
+          <div class="color-item">
+            <span>Cor do fade</span>
+            <input type="color" id="fadeColor" value="#000000" oninput="syncHex('fadeColor');render()" />
+            <input type="text" id="fadeColorHex" value="#000000" maxlength="7" oninput="syncColor('fadeColor');render()" />
+          </div>
+          <div class="color-item">
+            <span>Cor da tag</span>
+            <input type="color" id="tagBg" value="#ffffff" oninput="syncHex('tagBg');render()" />
+            <input type="text" id="tagBgHex" value="#ffffff" maxlength="7" oninput="syncColor('tagBg');render()" />
+          </div>
+          <div class="color-item">
+            <span>Texto da tag</span>
+            <input type="color" id="tagText" value="#0a0a0a" oninput="syncHex('tagText');render()" />
+            <input type="text" id="tagTextHex" value="#0a0a0a" maxlength="7" oninput="syncColor('tagText');render()" />
           </div>
         </div>
 
@@ -329,6 +352,22 @@ function onFontWeight() {
 
 function val(id) { return parseFloat(document.getElementById(id).value); }
 
+// Sincroniza o seletor de cor com o campo de texto hex e vice-versa
+function syncHex(id) {
+  document.getElementById(id + "Hex").value = document.getElementById(id).value;
+}
+function syncColor(id) {
+  let v = document.getElementById(id + "Hex").value.trim();
+  if (!v.startsWith("#")) v = "#" + v;
+  if (/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById(id).value = v;
+}
+function hexToRgb(hex) {
+  const m = /^#?([0-9a-fA-F]{6})$/.exec(hex.trim());
+  if (!m) return { r: 0, g: 0, b: 0 };
+  const n = parseInt(m[1], 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
 function roundRect(x, y, w, h, r) {
   r = Math.min(r, h / 2, w / 2);
   ctx.beginPath();
@@ -431,11 +470,13 @@ function render() {
     ctx.filter = "none";
   }
 
-  // Escurecimento (gradiente) para leitura do texto — intensidade ajustável
+  // Fade sobre a foto — cor escolhida + intensidade ajustável
+  const fc = hexToRgb(document.getElementById("fadeColor").value);
+  const rgba = (a) => `rgba(${fc.r},${fc.g},${fc.b},${a})`;
   const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, `rgba(0,0,0,${(darken * 1.1).toFixed(3)})`);
-  grad.addColorStop(0.45, `rgba(0,0,0,${(darken * 0.5).toFixed(3)})`);
-  grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.95, darken * 1.7).toFixed(3)})`);
+  grad.addColorStop(0, rgba((darken * 1.1).toFixed(3)));
+  grad.addColorStop(0.45, rgba((darken * 0.5).toFixed(3)));
+  grad.addColorStop(1, rgba(Math.min(0.95, darken * 1.7).toFixed(3)));
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
@@ -447,10 +488,10 @@ function render() {
   if (kickerText) {
     const kw = ctx.measureText(kickerText).width;
     const bh = 46, bx = pad, by = 150, bw = kw + 40;
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = document.getElementById("tagBg").value;
     roundRect(bx, by, bw, bh, bh / 2);
     ctx.fill();
-    ctx.fillStyle = "#0a0a0a";
+    ctx.fillStyle = document.getElementById("tagText").value;
     ctx.fillText(kickerText, bx + 20, by + 31);
   }
 
