@@ -123,10 +123,6 @@
             <input type="range" id="posX" min="-100" max="100" step="1" value="0" oninput="render()" />
           </div>
           <div class="slider">
-            <span>Posição vertical</span>
-            <input type="range" id="posY" min="-100" max="100" step="1" value="0" oninput="render()" />
-          </div>
-          <div class="slider">
             <span>Brilho <b id="brightVal">100%</b></span>
             <input type="range" id="bright" min="40" max="180" step="1" value="100" oninput="render()" />
           </div>
@@ -325,7 +321,6 @@ function openModal(n) {
   // reseta os ajustes da imagem
   document.getElementById("zoom").value = 100;
   document.getElementById("posX").value = 0;
-  document.getElementById("posY").value = 0;
   document.getElementById("bright").value = 100;
   document.getElementById("contrast").value = 100;
   document.getElementById("dark").value = 50;
@@ -413,7 +408,12 @@ function drawCover(img, W, H, scale, offX, offY) {
   let dw, dh;
   if (ir > cr) { dh = H; dw = H * ir; } else { dw = W; dh = W / ir; }
   dw *= scale; dh *= scale;
-  // espaço extra que o zoom/cover criam, usado para o reposicionamento
+  // garante folga mínima (12%) nos DOIS eixos, sem distorcer a foto,
+  // para que os sliders de posição sempre funcionem (mesmo sem zoom)
+  const minSlack = 0.12;
+  const extra = Math.max(1, ((1 + minSlack) * H) / dh, ((1 + minSlack) * W) / dw);
+  dw *= extra; dh *= extra;
+  // espaço extra usado para o reposicionamento
   const slackX = dw - W;
   const slackY = dh - H;
   const dx = (W - dw) / 2 + (offX / 100) * (slackX / 2);
@@ -452,7 +452,7 @@ function render() {
   // Leitura dos ajustes
   const zoom = val("zoom") / 100;
   const offX = val("posX");
-  const offY = val("posY");
+  const offY = 0;
   const bright = val("bright");
   const contrast = val("contrast");
   const darken = val("dark") / 100;
