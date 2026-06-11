@@ -123,6 +123,10 @@
             <input type="range" id="posX" min="-100" max="100" step="1" value="0" oninput="render()" />
           </div>
           <div class="slider">
+            <span>Posição vertical</span>
+            <input type="range" id="posY" min="-100" max="100" step="1" value="0" oninput="render()" />
+          </div>
+          <div class="slider">
             <span>Brilho <b id="brightVal">100%</b></span>
             <input type="range" id="bright" min="40" max="180" step="1" value="100" oninput="render()" />
           </div>
@@ -321,6 +325,7 @@ function openModal(n) {
   // reseta os ajustes da imagem
   document.getElementById("zoom").value = 100;
   document.getElementById("posX").value = 0;
+  document.getElementById("posY").value = 0;
   document.getElementById("bright").value = 100;
   document.getElementById("contrast").value = 100;
   document.getElementById("dark").value = 50;
@@ -452,7 +457,7 @@ function render() {
   // Leitura dos ajustes
   const zoom = val("zoom") / 100;
   const offX = val("posX");
-  const offY = 0;
+  const offY = val("posY");
   const bright = val("bright");
   const contrast = val("contrast");
   const darken = val("dark") / 100;
